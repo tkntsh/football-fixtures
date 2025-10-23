@@ -21,31 +21,31 @@ function App() {
         const apiKey = process.env.REACT_APP_FOOTBALLDATA_API_KEY;
         const headers = { 'X-Auth-Token': apiKey };
 
-        // Use /api/v4/... for all environments
+        // Use /api/v4/... for all environments; Netlify redirects handle production
         const baseURL = '/api';
 
-        // Fixtures: Upcoming matches (test 2024 season)
+        // Fixtures: Upcoming matches
         console.log('Fetching fixtures...');
-        const fixturesRes = await axios.get(`${baseURL}/v4/competitions/PL/matches?status=SCHEDULED&season=2024`, { headers });
+        const fixturesRes = await axios.get(`${baseURL}/v4/competitions/PL/matches?status=SCHEDULED`, { headers });
         const fixtures = fixturesRes.data.matches || [];
 
-        // Results: Past matches (last 10 for recent gameweek, 2024 season)
+        // Results: Past matches (last 10 for recent gameweek)
         console.log('Fetching results...');
-        const resultsRes = await axios.get(`${baseURL}/v4/competitions/PL/matches?status=FINISHED&season=2024`, { headers });
+        const resultsRes = await axios.get(`${baseURL}/v4/competitions/PL/matches?status=FINISHED`, { headers });
         const now = new Date();
         const recentResults = resultsRes.data.matches
           ?.filter(match => new Date(match.utcDate) < now)
           .sort((a, b) => new Date(b.utcDate) - new Date(a.utcDate))
           .slice(0, 10) || [];
 
-        // Standings: League table (2024 season)
+        // Standings: League table
         console.log('Fetching standings...');
-        const standingsRes = await axios.get(`${baseURL}/v4/competitions/PL/standings?season=2024`, { headers });
+        const standingsRes = await axios.get(`${baseURL}/v4/competitions/PL/standings`, { headers });
         const standings = standingsRes.data.standings?.[0]?.table || [];
 
-        // Player Stats: Top scorers (2024 season)
+        // Player Stats: Top scorers
         console.log('Fetching player stats...');
-        const statsRes = await axios.get(`${baseURL}/v4/competitions/PL/scorers?season=2024`, { headers });
+        const statsRes = await axios.get(`${baseURL}/v4/competitions/PL/scorers`, { headers });
         const playerStats = statsRes.data.scorers || [];
 
         console.log('API Data:', { fixtures, recentResults, standings, playerStats });
