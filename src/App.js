@@ -21,10 +21,8 @@ function App() {
         const apiKey = process.env.REACT_APP_FOOTBALLDATA_API_KEY;
         const headers = { 'X-Auth-Token': apiKey };
 
-        // Base API URL: Full URL in production, proxy in development
-        const baseURL = process.env.NODE_ENV === 'production'
-          ? 'https://api.football-data.org'
-          : '';
+        // Use /api/v4/... for all environments; Netlify redirects handle production
+        const baseURL = '/api';
 
         // Fixtures: Upcoming matches
         console.log('Fetching fixtures...');
@@ -62,7 +60,7 @@ function App() {
       } catch (err) {
         const errorMessage = err.response
           ? `API Error: ${err.response.status} - ${err.response.data.message || 'Unknown error'}`
-          : `Network Error: Check API key, network connection, or CORS settings.`;
+          : `Network Error: Check API key, network connection, or CORS proxy settings.`;
         setError(errorMessage);
         setLoading(false);
         console.error('API Error:', err);

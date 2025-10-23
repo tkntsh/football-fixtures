@@ -1,2 +1,2 @@
 /*    /index.html   200
-/v4/*  https://api.football-data.org/:splat  200
+/api/v4/*  https://api.football-data.org/v4/:splat  200
