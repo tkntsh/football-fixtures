@@ -21,14 +21,19 @@ function App() {
         const apiKey = process.env.REACT_APP_FOOTBALLDATA_API_KEY;
         const headers = { 'X-Auth-Token': apiKey };
 
-        // Fixtures: Upcoming matches (via proxy)
+        // Base API URL: Full URL in production, proxy in development
+        const baseURL = process.env.NODE_ENV === 'production'
+          ? 'https://api.football-data.org'
+          : '';
+
+        // Fixtures: Upcoming matches
         console.log('Fetching fixtures...');
-        const fixturesRes = await axios.get('/v4/competitions/PL/matches?status=SCHEDULED', { headers });
+        const fixturesRes = await axios.get(`${baseURL}/v4/competitions/PL/matches?status=SCHEDULED`, { headers });
         const fixtures = fixturesRes.data.matches || [];
 
         // Results: Past matches (last 10 for recent gameweek)
         console.log('Fetching results...');
-        const resultsRes = await axios.get('/v4/competitions/PL/matches?status=FINISHED', { headers });
+        const resultsRes = await axios.get(`${baseURL}/v4/competitions/PL/matches?status=FINISHED`, { headers });
         const now = new Date();
         const recentResults = resultsRes.data.matches
           ?.filter(match => new Date(match.utcDate) < now)
@@ -37,12 +42,12 @@ function App() {
 
         // Standings: League table
         console.log('Fetching standings...');
-        const standingsRes = await axios.get('/v4/competitions/PL/standings', { headers });
+        const standingsRes = await axios.get(`${baseURL}/v4/competitions/PL/standings`, { headers });
         const standings = standingsRes.data.standings?.[0]?.table || [];
 
         // Player Stats: Top scorers
         console.log('Fetching player stats...');
-        const statsRes = await axios.get('/v4/competitions/PL/scorers', { headers });
+        const statsRes = await axios.get(`${baseURL}/v4/competitions/PL/scorers`, { headers });
         const playerStats = statsRes.data.scorers || [];
 
         console.log('API Data:', { fixtures, recentResults, standings, playerStats });
@@ -57,7 +62,7 @@ function App() {
       } catch (err) {
         const errorMessage = err.response
           ? `API Error: ${err.response.status} - ${err.response.data.message || 'Unknown error'}`
-          : `Network Error: Check API key, proxy, or network connection.`;
+          : `Network Error: Check API key, network connection, or CORS settings.`;
         setError(errorMessage);
         setLoading(false);
         console.error('API Error:', err);
