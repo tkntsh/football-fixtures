@@ -20,7 +20,7 @@ function App() {
         setError(null);
         const headers = { 'X-Auth-Token': process.env.REACT_APP_FOOTBALLDATA_API_KEY };
 
-        // Use /api/v4/... for proxy (Vercel function or local package.json proxy)
+        // Use /api/v4/... for proxy (Express server or local package.json proxy)
         const baseURL = '/api';
 
         // Fixtures: Upcoming matches (2025/26 season)
