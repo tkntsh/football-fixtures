@@ -2,12 +2,13 @@ const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 const path = require('path');
+require('dotenv').config(); // Load environment variables
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors()); // Enable CORS for development (optional)
+app.use(cors());
 app.use(express.json());
 
 // Serve static files from React build in production
@@ -18,6 +19,9 @@ if (process.env.NODE_ENV === 'production') {
 // Proxy API calls to Football-Data.org
 app.use('/api/v4', async (req, res) => {
   try {
+    if (!process.env.REACT_APP_FOOTBALLDATA_API_KEY) {
+      throw new Error('API key is not defined in environment variables');
+    }
     const response = await axios({
       method: req.method,
       url: `https://api.football-data.org/v4${req.url}`,
@@ -28,7 +32,7 @@ app.use('/api/v4', async (req, res) => {
     });
     res.status(response.status).json(response.data);
   } catch (error) {
-    console.error('Proxy Error:', error);
+    console.error('Proxy Error:', error.response?.data || error.message);
     res.status(error.response?.status || 500).json({ error: error.message });
   }
 });
